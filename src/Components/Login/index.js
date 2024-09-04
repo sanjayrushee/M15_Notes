@@ -1,5 +1,6 @@
 import { Component } from "react";
 import {Link} from 'react-router-dom'
+import Cookies from 'js-cookie'
 
 import './index.css'
 
@@ -14,6 +15,16 @@ class Login extends Component{
     password: '',
   }
 
+  onSubmitSuccess = jsToken => {
+    const {history} = this.props
+    Cookies.set('jwtToken',jsToken)
+    history.replace("/")
+  }
+  
+  onSubmitFail = errorMsg => {
+    alert(errorMsg)
+  }
+
   onSubmitFunction = async (event) => {
     event.preventDefault()
 
@@ -23,7 +34,7 @@ class Login extends Component{
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Telling the server you're sending JSON
+        'Content-Type': 'application/json', 
       },
       body: JSON.stringify({ 
         email,
@@ -36,9 +47,9 @@ class Login extends Component{
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data.jwtToken);
+        this.onSubmitSuccess(data.jwtToken)
       } else {
-        console.log(data.error_msg);
+       this.onSubmitFail(data.error)
       }
     } catch (error) {
       console.error('Error:', error);
@@ -55,6 +66,7 @@ class Login extends Component{
   }
     
     render(){
+    
       const {email,password} = this.state
              return(
               <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0">
@@ -86,7 +98,7 @@ class Login extends Component{
                       </div>
                       <input
                         className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
-                        type="password"
+                        type="text"
                         required
                         value={password}
                         onChange={this.handleChangepassword}
@@ -103,7 +115,7 @@ class Login extends Component{
                         className="text-xs text-gray-500 capitalize text-center w-full"
                       >
                         Don&apos;t have any account yet?
-                        <Link to="/singup">
+                        <Link to="/signup">
                         <span className="text-blue-700"> Sign Up</span>
                         </Link>
                       </p>
